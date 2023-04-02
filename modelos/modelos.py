@@ -31,6 +31,7 @@ class Album(db.Model):
     medio = db.Column(db.Enum(Medio))
     usuario = db.Column(db.Integer, db.ForeignKey("usuario.id"))
     canciones = db.relationship('Cancion', secondary = 'album_cancion', back_populates="albumes")
+    #__table_args__ = (db.UniqueConstraint('usuario', 'titulo', name = 'titulo_unico_album'))
     
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)

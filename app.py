@@ -1,6 +1,9 @@
 from flaskr import create_app
 from .modelos import db, Cancion, Usuario, Album, Medio
 from .modelos import AlbumSchema
+from flask_restful import Api
+from .vistas import VistaCanciones, VistaCancion
+
 
 app = create_app('default')
 app_context = app.app_context()
@@ -9,8 +12,12 @@ app_context.push()
 db.init_app(app)
 db.create_all()
 
+api = Api(app)
+api.add_resource(VistaCanciones, '/canciones')
+api.add_resource(VistaCancion,'/cancion/<int:id_cancion>')
+
 #PRUEBA
-with app.app_context():
+""" with app.app_context(): 
     album_schema = AlbumSchema()
 
     #c2 = Cancion(titulo="Prueba2", minutos=10,segundos=25, interprete='Gina' )
@@ -32,3 +39,5 @@ with app.app_context():
     #db.session.delete(a)
     #print(Album.query.all())
     #print(Cancion.query.all())
+
+"""
