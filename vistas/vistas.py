@@ -2,6 +2,11 @@ from flask import request
 from ..modelos import db, Cancion, CancionSchema, Usuario, UsuarioSchema, Album, AlbumSchema
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
+from ..tareas.tareas import registrar_log
+
+from celery.utils.log import get_logger
+logger = get_logger(__name__)
 
 from flask_jwt_extended import jwt_required, create_access_token
 
@@ -47,6 +52,10 @@ class VistaLogIn(Resource):
             u_contrasena = request.json["contrasena"]
             usuario = Usuario.query.filter_by(nombre=u_nombre, contrasena = u_contrasena).all()
             if usuario:
+                try:
+                    registrar_log.delay(u_nombre,datetime.utcnow())
+                except registrar_log.OperationalError as exc:
+                    logger.exception('Prueba de error Sending task raised: %r', exc)
                 return {'mensaje':'Inicio de sesión exitoso'}, 200
             else:
                 return {'mensaje':'Nombre de usuario o contraseña incorrectos'}, 401
